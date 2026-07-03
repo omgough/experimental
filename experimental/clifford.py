@@ -9,8 +9,9 @@ def _():
     import marimo as mo
     import numpy as np
     import matplotlib.pyplot as plt
+    from matplotlib.colors import LogNorm, LinearSegmentedColormap
 
-    return mo, np, plt
+    return LinearSegmentedColormap, LogNorm, mo, np, plt
 
 
 @app.cell(hide_code=True)
@@ -89,6 +90,43 @@ def _(mo):
 
     mo.vstack([a_slider, b_slider, c_slider, d_slider])
     return a_slider, b_slider, c_slider, d_slider
+
+
+@app.cell
+def _(np, x_values, y_values):
+    bins = 800
+    density, x_edges, y_edges = np.histogram2d(x_values, y_values, bins=bins)
+    return (density,)
+
+
+@app.cell
+def _(LinearSegmentedColormap, LogNorm, density, plt):
+    LIGHT_GROUND = "#f5f2ea"
+    storm_colors = [
+        (0.00, "#15347e"),
+        (0.12, "#2f57bf"),
+        (0.30, "#1f9b86"),
+        (0.55, "#f08a2b"),
+        (0.78, "#d6517e"),
+        (1.00, "#d11f2d"),
+    ]
+    mitchell_storm = LinearSegmentedColormap.from_list("mitchell_storm", storm_colors)
+    mitchell_storm.set_bad(LIGHT_GROUND)
+    mitchell_storm.set_under(LIGHT_GROUND)
+
+    fig2 = plt.figure(figsize=(8, 8))
+    fig2.patch.set_facecolor(LIGHT_GROUND)
+    ax2 = fig2.add_subplot()
+    ax2.set_facecolor(LIGHT_GROUND)
+    ax2.imshow(
+        density.T,
+        origin="lower",
+        cmap=mitchell_storm,
+        norm=LogNorm(vmin=3, vmax=density.max()),
+    )
+    ax2.axis("off")
+    fig2
+    return
 
 
 @app.cell
