@@ -11,7 +11,7 @@ def _():
     import matplotlib.pyplot as plt
     from matplotlib.colors import LogNorm, LinearSegmentedColormap
 
-    return LinearSegmentedColormap, LogNorm, mo, np, plt
+    return mo, np, plt
 
 
 @app.cell(hide_code=True)
@@ -96,36 +96,57 @@ def _(mo):
 def _(np, x_values, y_values):
     bins = 800
     density, x_edges, y_edges = np.histogram2d(x_values, y_values, bins=bins)
-    return (density,)
+    return
 
 
 @app.cell
-def _(LinearSegmentedColormap, LogNorm, density, plt):
-    LIGHT_GROUND = "#f5f2ea"
-    storm_colors = [
-        (0.00, "#15347e"),
-        (0.12, "#2f57bf"),
-        (0.30, "#1f9b86"),
-        (0.55, "#f08a2b"),
-        (0.78, "#d6517e"),
-        (1.00, "#d11f2d"),
-    ]
-    mitchell_storm = LinearSegmentedColormap.from_list("mitchell_storm", storm_colors)
-    mitchell_storm.set_bad(LIGHT_GROUND)
-    mitchell_storm.set_under(LIGHT_GROUND)
+def _():
+    # LIGHT_GROUND = "#f5f2ea"
+    # storm_colors = [
+    #     (0.00, "#15347e"),
+    #     (0.12, "#2f57bf"),
+    #     (0.30, "#1f9b86"),
+    #     (0.55, "#f08a2b"),
+    #     (0.78, "#d6517e"),
+    #     (1.00, "#d11f2d"),
+    # ]
+    # mitchell_storm = LinearSegmentedColormap.from_list("mitchell_storm", storm_colors)
+    # mitchell_storm.set_bad(LIGHT_GROUND)
+    # mitchell_storm.set_under(LIGHT_GROUND)
 
-    fig2 = plt.figure(figsize=(8, 8))
-    fig2.patch.set_facecolor(LIGHT_GROUND)
-    ax2 = fig2.add_subplot()
-    ax2.set_facecolor(LIGHT_GROUND)
-    ax2.imshow(
-        density.T,
-        origin="lower",
-        cmap=mitchell_storm,
-        norm=LogNorm(vmin=3, vmax=density.max()),
-    )
-    ax2.axis("off")
-    fig2
+    # fig2 = plt.figure(figsize=(8, 8))
+    # fig2.patch.set_facecolor(LIGHT_GROUND)
+    # ax2 = fig2.add_subplot()
+    # ax2.set_facecolor(LIGHT_GROUND)
+    # ax2.imshow(
+    #     density.T,
+    #     origin="lower",
+    #     cmap=mitchell_storm,
+    #     norm=LogNorm(vmin=3, vmax=density.max()),
+    # )
+    # ax2.axis("off")
+    # fig2
+    return
+
+
+@app.cell
+def _(plt, x_values, y_values):
+    SITE_BG = "#fcfbf7"
+
+    fig3 = plt.figure(figsize=(8, 8))
+    fig3.patch.set_facecolor(SITE_BG)
+    ax3 = fig3.add_subplot()
+    ax3.set_facecolor(SITE_BG)
+    ax3.scatter(x_values, y_values, s=0.1, alpha=0.2, color="#2f57bf", edgecolors="none")
+    ax3.set_aspect("equal")
+    ax3.axis("off")
+    fig3
+    return SITE_BG, fig3
+
+
+@app.cell
+def _(SITE_BG, fig3):
+    fig3.savefig("clifford_blue_01.png", dpi=300, facecolor=SITE_BG, bbox_inches="tight")
     return
 
 
