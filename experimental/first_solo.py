@@ -11,18 +11,29 @@ def _():
     import matplotlib.pyplot as plt
     import matplotlib as mpl
     from matplotlib.colors import LogNorm, LinearSegmentedColormap
+    from fractions import Fraction
 
-    return mo, mpl, np, plt
+    return Fraction, mo, mpl, np, plt
 
 
 @app.cell
-def _(np):
+def _(Fraction, np):
     def attractor(x, y, a, b):
         x_next = np.sin(x**2 - y**2 + a)
         y_next = np.cos(2*x*y + b)
         return x_next, y_next
 
-    return (attractor,)
+    def pi_label(value):
+        frac = Fraction(value / np.pi).limit_denominator(8)
+        n, d = frac.numerator, frac.denominator
+        if n == 0:
+            return "0"
+        sign = "-" if n < 0 else ""
+        n = abs(n)
+        num = r"\pi" if n == 1 else rf"{n}\pi"
+        return rf"{sign}{num}" if d == 1 else rf"{sign}\frac{{{num}}}{{{d}}}"
+
+    return attractor, pi_label
 
 
 @app.cell
@@ -46,7 +57,7 @@ def _(a_slider, attractor, b_slider):
 
 
 @app.cell
-def _(a, b, mpl, plt, x_values, y_values):
+def _(a, b, mpl, pi_label, plt, x_values, y_values):
     mpl.rcParams["mathtext.fontset"] = "stix"   # Cambria-like serif math
     SITE_BG = "#fcfbf7"
     fig = plt.figure(figsize=(8, 8))
@@ -61,7 +72,7 @@ def _(a, b, mpl, plt, x_values, y_values):
     label = (
         r"$x_{n+1} = \sin(x_n^2 - y_n^2 + a)$" "\n"
         r"$y_{n+1} = \cos(2 x_n y_n + b)$" "\n"
-        rf"$a = {a:.2f}, \; b = {b:.2f}$"
+        rf"$a = {pi_label(a)}, \; b = {pi_label(b)}$"
     )
     fig.text(
         0.03, 0.97, label,
@@ -75,16 +86,16 @@ def _(a, b, mpl, plt, x_values, y_values):
 
 
 @app.cell
-def _(mo):
-    a_slider = mo.ui.slider(-10.0, 10.0, step=0.1, label="a")
-    b_slider = mo.ui.slider(-10.0, 10.0, step=0.1, label="b")
+def _(mo, np):
+    a_slider = mo.ui.slider(-4*np.pi, 4*np.pi, step=np.pi/8, label="a")
+    b_slider = mo.ui.slider(-4*np.pi, 4*np.pi, step=np.pi/8, label="b")
     mo.vstack([a_slider, b_slider])
     return a_slider, b_slider
 
 
 @app.cell
 def _(SITE_BG, fig):
-    fig.savefig("attractor6", dpi=300, facecolor=SITE_BG, bbox_inches="tight")
+    fig.savefig("attractor9", dpi=300, facecolor=SITE_BG, bbox_inches="tight")
     return
 
 
